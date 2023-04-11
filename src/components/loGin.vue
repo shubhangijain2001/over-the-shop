@@ -31,8 +31,14 @@ export default {
             console.log(result)
             if(result.status==201 && result.data.length>0)
             {
-              localStorage.setItem("user-info",JSON.stringify(result.data[0]))
-              this.$router.push({name:'Products'})
+              localStorage.setItem("user",JSON.stringify(result.data[0]))
+              if(result.data[0].type=='user'){
+                this.$router.push({name:'Products'})
+              }
+              else if(result.data[0].type=='admin'){
+                this.$router.push({name:'addProduct'})
+              }
+              
     }
     else if(result.data=='invalid password or phone number'){
         alert('invalid!!')

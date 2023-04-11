@@ -1,4 +1,5 @@
 <template>
+<navBar2/>
   <div id="page-wrap">
     <h1>Shopping Cart</h1>
     <div v-if="cartItems.length>0">
@@ -16,13 +17,16 @@
             <h4> {{      product.quantity }} </h4>
             <button v-on:click="dec(product.id)" class="btn">-</button>
         </div>
+        <h3 id="ordid">Order ID:{{product.order_id}}</h3>
       </div>
       <button v-on:click="remove(product.id)" class="remove-button">Remove From Cart</button>
     </div>
     <h3 id="total-price">Total: ${{ totalPrice }}</h3>
-    <button id="checkout-button">Proceed to Checkout</button>
+    <button id="checkout-button" v-on:click="checkout">Proceed to Checkout</button>
   </div>
-  <h1 class="hh" v-else>Cart is empty</h1>
+  <div class="wimg" v-else>
+    <img src="../assets/empty_cart.png" alt="">
+  </div>
   </div>
 
   
@@ -30,13 +34,18 @@
 
 <script>
 //import { cartItems } from '../fake-data';
+import navBar2 from "../components/navBar2.vue"
 import axios from "axios"
 export default {
     name: 'CartPage',
+    components:{
+      navBar2
+    },
     data() {
       return {
         cartItems:[],
         id:'',
+        totalValue:0
       }
     },
     computed: {
@@ -53,12 +62,25 @@ export default {
       }
       
     },
+    watch: {
+    totalPrice(newVal) {
+      // Update the totalValue data property whenever totalPrice changes
+      this.totalValue = newVal;
+    },
+  },
    async created(){
-        let user=JSON.parse(localStorage.getItem('user-info')).id
+    if(JSON.parse(localStorage.getItem('user')).type=='user'){
+            this.$router.push({name:'Cart'})
+            let user=JSON.parse(localStorage.getItem('user')).id
         //console.log('bsacbb',user)
         let result=await axios.post(`http://localhost:5500/cart/${user}`)
         console.log(result.data)
         this.cartItems=result.data
+        }
+      else{
+        this.$router.push({name:'login'})
+      }
+        
         /*let id=JSON.stringify(result.data).fk_product_id
         console.log('product id',id)
         let res=await axios.get("http://localhost:5500/products/"+ id)
@@ -66,20 +88,29 @@ export default {
     },
     methods:{
         async remove(pid){
-            let user=JSON.parse(localStorage.getItem('user-info')).id
+            let user=JSON.parse(localStorage.getItem('user')).id
             let result=await axios.post(`http://localhost:5500/delete/${user}/cart/${pid}`)
             console.log(result.data)
+            this.cartItems=this.cartItems.filter(
+              (item)=>item.fk_product_id !== pid
+            )
         },
         async dec(pid){
-            let user=JSON.parse(localStorage.getItem('user-info')).id
+            let user=JSON.parse(localStorage.getItem('user')).id
             let result=await axios.post(`http://localhost:5500/dec/${user}/cart/${pid}`)
             console.log(result.data)
+            this.cartItems=result.data
         },
         async inc(pid){
-            let user=JSON.parse(localStorage.getItem('user-info')).id
+            let user=JSON.parse(localStorage.getItem('user')).id
             let result=await axios.post(`http://localhost:5500/inc/${user}/cart/${pid}`)
             console.log(result.data)
+            this.cartItems=result.data
         },
+        async checkout(){
+          console.log("hii",this.totalValue)
+          this.$router.push({name:'orderDetails',params:{total:`${this.totalValue}`}})
+        }
     }
 };
 </script>
@@ -135,8 +166,17 @@ export default {
   .btn{
     height: 10px;
     width: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   h4{
     margin-top: 10px;
+  }
+  .wimg{
+    display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
   }
 </style>

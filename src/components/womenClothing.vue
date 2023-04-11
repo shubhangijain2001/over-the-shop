@@ -8,14 +8,11 @@
         v-bind:key="product.id"
       >
         <img v-bind:src="product.image" />
-        <div>
         <h3 class="product-name">{{ product.title }}</h3>
         <p class="product-price">${{ product.price }}</p>
         <router-link v-bind:to="'/products/' + product.id">
-          <button >View Details</button>
+          <button>View Details</button>
         </router-link>
-
-        </div>
       </div>
     </div>
   </div>
@@ -23,12 +20,12 @@
 
 <script>
 //import { products } from '../fake-data';
+import navBar1 from "../components/navBar1.vue"
 import axios from "axios"
-import navBar1 from '@/components/navBar1.vue';
 export default {
-    name: 'ProductsPage',
+    name: 'womenClothing',
     components:{
-      navBar1,
+      navBar1
     },
     data() {
       return {
@@ -36,7 +33,8 @@ export default {
       };
     },
     async mounted(){
-        let result=await axios.get("http://localhost:5500/products");
+        let cat='women clothing '
+        let result=await axios.get(`http://localhost:5500/products/${cat}`);
     this.products=result.data
     }
 };
@@ -56,7 +54,6 @@ export default {
     box-shadow: 0px 2px 5px #888;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     margin-bottom: 2%;
     padding: 20px;
     position: relative;
@@ -86,9 +83,6 @@ export default {
   color: #fff;
   border: none;
   border-radius: 0.25rem;*/
-  }
-  .product-price{
-    text-align: center;
   }
 </style>
 

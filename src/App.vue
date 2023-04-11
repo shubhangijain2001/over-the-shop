@@ -1,19 +1,19 @@
 <template>
   <div id="app">
-    <navBar1/>
+    
     <router-view/>
   </div>
 </template>
 
 <script>
 //import NavBar from './components/NavBar.vue';
-import navBar1 from "./components/navBar1.vue"
+//import navBar1 from "./components/navBar1.vue"
 export default {
   name: 'App',
-  components: {
+  /*components: {
     //NavBar,
     navBar1,
-  }
+  }*/
 }
 </script>
 
@@ -21,6 +21,7 @@ export default {
   * {
     box-sizing: border-box;
     font-family: Arial;
+    padding:0px
   }
 
   #page-wrap {

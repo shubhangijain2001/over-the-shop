@@ -1,36 +1,24 @@
 <template>
-  <nav>
-    <button v-on:click="show">OVER THE SHOP</button>
-    <div v-if="showSidebar" ref="sidebar">
-  <sideBar @clicked="onClickChild($event)"/>
-</div>
+<div>
+    <nav>
+  <sideBar1 />
     
-    <div class="nav-left">
+    <div class="nav-right">
       <ul>
         <li><router-link to="/products">Home</router-link></li>
-        <li><router-link to="/cart">Cart</router-link></li>
-        <li><router-link to="/orderHistory">Order history</router-link></li>
         <li><a v-on:click="logout " href="/signup">Logout</a></li>
       </ul>
     </div>
-    <div class="nav-right">
-      <form @submit.prevent="search">
-        <input type="text" v-model="searchTerm" placeholder="Search...">
-        <button type="submit">Search</button>
-      </form>
-    </div>
-  </nav>
-  <div >
+    </nav>
     </div>
 </template>
-
 <script>
-import sideBar from "./sideBar.vue"
+import sideBar1 from "./sideBar1.vue"
 //import router from "../routes/index"
 export default {
-  name: 'navBar1',
+  name: 'navBar3',
   components:{
-    sideBar,
+    sideBar1,
   },
   data() {
     return {
@@ -72,7 +60,7 @@ export default {
     this.showSidebar = false;
   }
 }*/
-  },
+  }
  /* beforeUnmount() {
     document.removeEventListener('click', this.handleOutsideClick);
   },*/
@@ -82,9 +70,12 @@ export default {
 <style scoped>
 nav {
   background-color: #333;
-  color: #fff;
+  color: white;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  height:40px;
+  margin-left: 220px;
   padding: 1rem;
 }
 
@@ -92,20 +83,18 @@ nav {
 .nav-right form {
   display: flex;
   align-items: center;
-  margin-top: 25px;
+  margin-top: 35px;
 }
 
 ul {
   display: flex;
   list-style: none;
   margin: 0;
-  
   padding: 0;
 }
 
 li {
   margin-left: 1rem;
-  font-size:16px;
 }
 
 a {

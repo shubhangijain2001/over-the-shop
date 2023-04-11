@@ -15,7 +15,14 @@
       <input type="text" id="username" v-model="pincode" placeholder="Pincode">
       <label for="phone">Contact Number:</label>
       <input type="text" id="username" v-model="phone" placeholder="Contact Number">
-      <button type="submit">Sign Up</button>
+      <label for="">User Type:</label>
+      <select v-model="type">
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+      </select><br>
+      <button type="submit">Sign Up</button><br>
+      <p>Already have an account?</p>
+      <a href="/login" class="loghref">Login here</a>
     </form>
   </div>
 </template>
@@ -31,22 +38,24 @@ export default {
       password: '',
       address: '',
       pincode:'',
-      phone:''
+      phone:'',
+      type:''
     };
   },
   methods: {
    async signup() {
       // do something with the username, email, password, and confirmPassword
-      console.log('Signing up with:', this.name, this.email, this.password, this.address,this.pincode,this.phone);
+      console.log('Signing up with:', this.name, this.email, this.password, this.address,this.pincode,this.phone,this.type);
     let result= await axios.post("http://localhost:5500/users",{
         name:this.name,
         email:this.email,
         password:this.password,
         address:this.address,
         pincode:parseInt(this.pincode),
-        phone:parseInt(this.phone)
+        phone:parseInt(this.phone),
+        type:this.type
      })
-
+      console.log(result.data)
      if(result.data=='user already exist')
      {
         alert('user already exist!!')
@@ -57,12 +66,19 @@ export default {
         this.address=''
         this.pincode=''
         this.phone=''
+        this.type=''
      }
      //console.log(result.data)
      let res= await axios.post(`http://localhost:5500/login`,{phone:parseInt(this.phone),password:this.password});
      if(result.status==201)
      {
         localStorage.setItem('user',JSON.stringify(res.data[0]));
+        if(res.data[0].type=='user'){
+          this.$router.push({name:'Products'})
+        }
+        else if(res.data[0].type=='admin'){
+          this.$router.push({name:'addProduct'})
+        }
     
     }
   },
@@ -120,9 +136,13 @@ button[type="submit"] {
   color: #fff;
   border: none;
   border-radius: 0.25rem;
+  width: 100px
 }
 .head{
     padding-bottom: 20px;
     /*margin-top: 10px;*/
+}
+.loghref{
+  color:blue
 }
 </style>
