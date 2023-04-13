@@ -113,7 +113,7 @@ const routes = [
         component:orderDetails
     },
     {
-        path: '/order',
+        path: '/order/:total',
         name : 'order',
         component:paymentSuccessful
     },

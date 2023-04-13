@@ -24,7 +24,7 @@
     </table>
   </div>
         <p><b>Order date:</b>{{ items.ord_date}}</p>
-        <p><b> Order value:</b>{{ items.total}}</p><br>
+        <p><b> Order value:</b>{{ total}}</p><br>
         <h4>Address details</h4><br>
         <p>{{items.address}}</p>
         <div>
@@ -42,7 +42,8 @@ export default {
     data(){
         return{
             items:[],
-            products:[]
+            products:[],
+            total:0
         }
     },
     methods:{
@@ -55,6 +56,7 @@ export default {
         }
     },
     async created(){
+        this.total=this.$route.params.total
         if(JSON.parse(localStorage.getItem('user')).type=='user'){
             this.$router.push({name:'order'})
         let user=JSON.parse(localStorage.getItem('user')).id
@@ -65,7 +67,7 @@ export default {
         let res=await axios.post(`http://localhost:5500/cart/${user}`)
         console.log('result2',res.data)
         this.products=res.data
-        console.log(this.products)
+        console.log("cart data",this.products)
        for(let i=0;i<res.data.length;i++){
             //console.log('hii')
             let res1=await axios.post("http://localhost:5500/history",{
@@ -81,10 +83,26 @@ export default {
                 product_id:parseInt(this.products[i].id),
             })
             console.log(res2.data)
+            
         }
-
+        const order_items=[]
+        for(let i=0;i<this.products.length;i++){
+            order_items.push({product_name: this.products[i].title, 
+            quantity: this.products[i].quantity, 
+            price: this.products[i].price})
+        }
         let res1=await axios.post(`http://localhost:5500/emptyCart/${id}`)
         console.log(res1)
+        let user_info=JSON.parse(localStorage.getItem('user'))
+        let res3=await axios.post('http://localhost:5500/api/send-order-email',{
+            name:user_info.name,
+            email:user_info.email,
+            order_id:this.items.order_id,
+            total:this.total,
+            order_date:this.items.ord_date,
+            order_items
+        })
+        console.log("email",res3.data)
 
         }
         else{

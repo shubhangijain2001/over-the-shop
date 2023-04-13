@@ -19,7 +19,7 @@
     <input type="text" v-model="imageURL"><br>
     <label for="">Rating</label>
     <input type="text" v-model="rating"><br>
-    <label for="">Quantity Avaible</label>
+    <label for="">Quantity Available</label>
     <input type="text" v-model="count"><br>
     <button class="btnAdd" v-on:click="add_product">Add a new product</button>
     </form>

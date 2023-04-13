@@ -1,7 +1,8 @@
 const client = require('./connection.js')
 const express = require('express');
 const app = express();
-const stripe = require('stripe')('sk_test_51Mt9tXSIryWp60XOBuYT31oFTsgkVxY1CW6ech63L2ZPF6CuRqs4mnLyX7Zr8RHRtQk64PcrvQ0RnqsIJcg6kiUi009QgGcCar'); // Replace with your actual Stripe secret key
+const nodemailer = require('nodemailer');
+const Mailgen = require('mailgen');
 const cors = require('cors')
 app.use(cors())
 
@@ -14,61 +15,65 @@ const bodyParser = require("body-parser");
 const { log } = require('console');
 app.use(bodyParser.json());
 
-// app.js (or index.js, depending on your setup)
 
-
-// ... other middleware and route setup
-
-// Route for creating a payment intent
-app.post('/create-payment-intent', async (req, res) => {
-  try {
-    const orderItems = req.body.orderItems; // Retrieve order items from request body
-    const customer = req.body.customer; // Retrieve customer details from request body
-
-    // Calculate total amount for the payment intent
-    // Here, you can customize the logic to calculate the total amount based on your application's requirements
-    const totalAmount = calculateTotalAmount(orderItems);
-
-    // Create a payment intent using the Stripe API
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: totalAmount,
-      currency: 'usd', // Replace with your desired currency
-      description: 'Order payment', // Replace with your desired description
-      metadata: {
-        customerName: customer.name,
-        customerEmail: customer.email,
-        customerAddress: customer.address
-      }
-    });
-
-    // Return the client secret to the frontend as the response
-    res.json({ clientSecret: paymentIntent.client_secret });
-  } catch (error) {
-    // Handle errors and return an error response
-    console.error('Error creating payment intent:', error);
-    res.status(500).json({ error: 'Failed to create payment intent' });
-  }
-});
-
-// ... other routes and server setup
-
-// Function to calculate the total amount based on order items
-// Function to calculate the total amount based on order items
-function calculateTotalAmount(orderItems) {
-    // Check if orderItems is defined and not null
-    if (!orderItems || orderItems.length === 0) {
-      throw new Error('Order items are missing or invalid');
-    }
   
-    // Implement your logic here to calculate the total amount based on order items
-    // You can use a database, external APIs, or any other method to get the prices and quantities of the order items,
-    // and calculate the total amount accordingly
-    let totalAmount = 0;
-    orderItems.forEach(orderItem => {
-      totalAmount += orderItem.price * orderItem.quantity;
-    });
-    return totalAmount;
-  }
+
+// Define API endpoint to send email
+app.post('/api/send-order-email', (req, res) => {
+  // Extract order data from request body
+  const { name, email, order_id,total,order_items,order_date } = req.body;
+
+  // Create a Nodemailer transport object with SMTP settings
+  const transporter = nodemailer.createTransport({
+    service: 'Gmail', // Use the email service of your choice
+    auth: {
+      user: 'shubhangi2001jain@gmail.com', // Replace with your email address
+      pass: 'nofkjafyfrjvwlyb' // Replace with your email password
+    }
+  });
+  let MailGenerator = new Mailgen({
+    theme: "default",
+    product : {
+        name: "Over the shop",
+        link : 'https://over_the_shop.js/'
+    }
+})
+
+let response = {
+    body: {
+        name : name,
+        intro: `Your order is placed! Your Order ID: ${order_id}, total amount: $${total} and Order Date: ${order_date}` ,
+        table : {
+            data : order_items
+},
+        // order_date: order_date,
+        // total_amount: total_amount,
+        // payment_method: payment_method == "cod"? "Cash On Delivery" : "Via Debit/Credit Cart",
+        
+        outro: "Keep Shopping with us!"
+    },
+    
+}
+let mail = MailGenerator.generate(response)
+  // Define email options
+  const mailOptions = {
+    from: 'shubhangi2001jain@gmail.com', // Replace with your email address
+    to: email, // Recipient's email address
+    subject: 'Order Confirmation', // Subject of the email
+    html: mail// HTML content of the email
+  };
+
+  // Send the email using Nodemailer
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Failed to send email:', error);
+      res.status(500).json({ message: 'Failed to send email' });
+    } else {
+      console.log('Email sent:', info.response);
+      res.status(200).json({ message: 'Email sent successfully' });
+    }
+  });
+});
   
 
 

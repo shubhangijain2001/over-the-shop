@@ -41,7 +41,7 @@ export default {
       }
     },
    async created(){
-        let user=JSON.parse(localStorage.getItem('user-info')).id
+        let user=JSON.parse(localStorage.getItem('user')).id
         //console.log('bsacbb',user)
         let result=await axios.post(`http://localhost:5500/wishlist/${user}`)
         console.log(result.data)

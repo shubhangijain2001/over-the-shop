@@ -74,7 +74,7 @@ export default {
         this.$router.push({name:'checkout'})
       }
       else if(this.deliveryMode=='COD'){
-        this.$router.push({name:'order'})
+        this.$router.push({name:'order',params:{total:`${this.total}`}})
       }
     },
   },
